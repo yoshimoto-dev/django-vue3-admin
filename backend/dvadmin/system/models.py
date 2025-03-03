@@ -605,6 +605,7 @@ class MessageCenterTargetUser(CoreModel):
     messagecenter = models.ForeignKey(MessageCenter, on_delete=models.CASCADE, db_constraint=False,
                                       verbose_name="关联消息中心表", help_text="关联消息中心表")
     is_read = models.BooleanField(default=False, blank=True, null=True, verbose_name="是否已读", help_text="是否已读")
+    read_time = models.DateTimeField(null=True, blank=True, verbose_name="阅读时间", help_text="阅读时间")
 
     class Meta:
         db_table = table_prefix + "message_center_target_user"

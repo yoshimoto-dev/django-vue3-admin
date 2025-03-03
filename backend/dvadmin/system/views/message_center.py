@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
+from datetime import datetime
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.db.models import Q
 from django_restql.fields import DynamicSerializerMethodField
 from rest_framework import serializers
 from rest_framework.decorators import action, permission_classes
@@ -86,6 +88,7 @@ class MessageCenterTargetUserListSerializer(CustomModelSerializer):
     user_info = DynamicSerializerMethodField()
     dept_info = DynamicSerializerMethodField()
     is_read = serializers.SerializerMethodField()
+    read_time = serializers.SerializerMethodField()
 
     def get_is_read(self, instance):
         user_id = self.request.user.id
@@ -94,6 +97,14 @@ class MessageCenterTargetUserListSerializer(CustomModelSerializer):
         if queryset:
             return queryset.is_read
         return False
+
+    def get_read_time(self, instance):
+        user_id = self.request.user.id
+        message_center_id = instance.id
+        queryset = MessageCenterTargetUser.objects.filter(messagecenter__id=message_center_id, users_id=user_id).first()
+        if queryset and queryset.read_time:
+            return queryset.read_time.strftime('%Y-%m-%d %H:%M:%S')
+        return None
 
     def get_role_info(self, instance, parsed_query):
         roles = instance.target_role.all()
@@ -221,10 +232,13 @@ class MessageCenterViewSet(CustomModelViewSet):
         user_id = self.request.user.id
         queryset = MessageCenterTargetUser.objects.filter(users__id=user_id, messagecenter__id=pk).first()
         if queryset:
-            queryset.is_read = True
-            queryset.save()
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
+            if not queryset.is_read:
+                queryset.is_read = True
+                queryset.read_time = datetime.now()
+                queryset.save()
+        # instance = queryset.messagecenter
+        # serializer = self.get_serializer(instance)
+        serializer = MessageCenterTargetUserListSerializer(queryset.messagecenter, many=False, request=request)
         # 主动推送消息
         unread_count = MessageCenterTargetUser.objects.filter(users__id=user_id, is_read=False).count()
         websocket_push(user_id, message={"sender": 'system', "contentType": 'TEXT',
@@ -237,8 +251,11 @@ class MessageCenterViewSet(CustomModelViewSet):
         获取接收到的消息
         """
         self_user_id = self.request.user.id
-        # queryset = MessageCenterTargetUser.objects.filter(users__id=self_user_id).order_by('-create_datetime')
         queryset = MessageCenter.objects.filter(target_user__id=self_user_id)
+        title = self.request.query_params.get('title', '')
+        if title:
+            queryset = queryset.filter(Q(title__icontains=title) | Q(content__icontains=title))
+        # queryset = MessageCenterTargetUser.objects.filter(users__id=self_user_id).order_by('-create_datetime')
         # queryset = self.filter_queryset(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:

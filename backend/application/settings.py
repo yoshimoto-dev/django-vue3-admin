@@ -133,9 +133,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = "zh-hans"
+LANGUAGE_CODE = "ja"
 
-TIME_ZONE = "Asia/Shanghai"
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -177,19 +177,20 @@ CORS_ALLOW_CREDENTIALS = True  # 指明在跨域访问中，后端是否支持�
 # ********************* channels配置 ******************* #
 # ===================================================== #
 ASGI_APPLICATION = 'application.asgi.application'
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
 # CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)], #需修改
-#         },
-#     },
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
 # }
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": ["redis://:DVADMIN3@dvadmin3-redis:6379/0"],
+            # "hosts": [('127.0.0.1', 6379)], #需修改
+        },
+    },
+}
 
 
 # ================================================= #
@@ -378,7 +379,7 @@ API_MODEL_MAP = {
 }
 
 DJANGO_CELERY_BEAT_TZ_AWARE = False
-CELERY_TIMEZONE = "Asia/Shanghai"  # celery 时区问题
+CELERY_TIMEZONE = "Asia/Tokyo"  # celery 时区问题
 # 静态页面压缩
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
@@ -404,7 +405,7 @@ PLUGINS_URL_PATTERNS = []
 # ********** 一键导入插件配置开始 **********
 # 例如:
 # from dvadmin_upgrade_center.settings import *    # 升级中心
-# from dvadmin3_celery.settings import *            # celery 异步任务
+from dvadmin3_celery.settings import *            # celery 异步任务
 # from dvadmin_third.settings import *            # 第三方用户管理
 # from dvadmin_ak_sk.settings import *            # 秘钥管理管理
 # from dvadmin_tenants.settings import *            # 租户管理

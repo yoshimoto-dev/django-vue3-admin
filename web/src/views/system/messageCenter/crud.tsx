@@ -109,7 +109,10 @@ export default function ({ crudExpose, context }: CreateCrudOptionsProps): Creat
 					title: '是否已读',
 					type: 'dict-select',
 					column: {
-						show: IsReadFunc.value,
+						minWidth: 60,
+						show: computed(() => {
+							return tabActivted.value === 'receive';
+						}),
 					},
 					dict: dict({
 						data: [
@@ -117,6 +120,19 @@ export default function ({ crudExpose, context }: CreateCrudOptionsProps): Creat
 							{ label: '未读', value: false, color: 'danger' },
 						],
 					}),
+					form: {
+						show: false,
+					},
+				},
+				read_time: {
+					title: '阅读时间',
+					type: 'datetime',
+					column: {
+						minWidth: 60,
+						show: computed(() => {
+							return tabActivted.value === 'receive';
+						}),
+					},
 					form: {
 						show: false,
 					},

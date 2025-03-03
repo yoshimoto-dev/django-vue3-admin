@@ -17,7 +17,7 @@ import { useFs } from '@fast-crud/fast-crud';
 import createCrudOptions from './crud';
 
 //tab选择
-const tabActivted = ref('send');
+const tabActivted = ref('receive');
 const onTabClick = (tab: any) => {
 	const { paneName } = tab;
 	tabActivted.value = paneName;
