@@ -31,10 +31,10 @@ RUN ls ./conf/
 RUN awk 'BEGIN { cmd="cp -i ./conf/env.example.py ./conf/env.py "; print "n" |cmd; }'
 
 # Update database host in the environment configuration
-RUN sed -i "s|DATABASE_HOST = 'dvadmin3-mysql'|DATABASE_HOST = '177.10.0.1'|g" ./conf/env.py
+RUN sed -i "s|DATABASE_HOST = 'mysql'|DATABASE_HOST = '177.10.0.1'|g" ./conf/env.py
 
 # Update Redis host in the environment configuration
-RUN sed -i "s|REDIS_HOST = 'dvadmin3-redis'|REDIS_HOST = '177.10.0.1'|g" ./conf/env.py
+RUN sed -i "s|REDIS_HOST = 'redis'|REDIS_HOST = '177.10.0.1'|g" ./conf/env.py
 
 # Install Python dependencies
 RUN python3 -m pip install -r requirements.txt

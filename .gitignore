@@ -6,4 +6,6 @@
 .vscode/
 web/package-lock.json
 docker_env/mysql/*
+!docker_env/mysql/Dockerfile
 docker_env/redis/*
+!docker_env/redis/Dockerfile

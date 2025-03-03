@@ -1,6 +1,6 @@
 version: "3"
 services:
-  dvadmin3-web:
+  web:
     container_name: dvadmin3-web
     ports:
       - "8088:8080"
@@ -21,17 +21,17 @@ services:
       network:
         ipv4_address: 177.10.0.11
 
-  dvadmin3-django:
+  django:
     build:
       context: .
       dockerfile: ./docker_env/django/Dockerfile
     container_name: dvadmin3-django
     working_dir: /backend
     depends_on:
-      - dvadmin3-mysql
+      - mysql
     environment:
       PYTHONUNBUFFERED: 1
-      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_HOST: mysql
       TZ: Asia/Tokyo
     volumes:
       - ./backend:/backend
@@ -47,8 +47,10 @@ services:
     # command: python manage.py runserver 0.0.0.0:8001
     command: uvicorn application.asgi:application --host 0.0.0.0 --port 8001 --workers 4
 
-  dvadmin3-mysql:
-    image: mysql:8.0
+  mysql:
+    build:
+      context: .
+      dockerfile: ./docker_env/mysql/Dockerfile
     container_name: dvadmin3-mysql
     privileged: true
     restart: always
@@ -72,17 +74,17 @@ services:
         ipv4_address: 177.10.0.13
 
 
-  dvadmin3-celery:
+  celery:
     build:
       context: .
       dockerfile: ./docker_env/celery/Dockerfile
     container_name: dvadmin3-celery
     working_dir: /backend
     depends_on:
-      - dvadmin3-mysql
+      - mysql
     environment:
       PYTHONUNBUFFERED: 1
-      DATABASE_HOST: dvadmin3-mysql
+      DATABASE_HOST: mysql
       TZ: Asia/Tokyo
     volumes:
       - ./backend:/backend
@@ -94,8 +96,10 @@ services:
     command: celery -A application worker --loglevel=info
 
 
-  dvadmin3-redis:
-    image: redis:6.2.6-alpine # 指定服务镜像，最好是与之前下载的redis配置文件保持一致
+  redis:
+    build:
+      context: .
+      dockerfile: ./docker_env/redis/Dockerfile
     container_name: dvadmin3-redis # 容器名称
     restart: always
     environment:
