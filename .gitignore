@@ -5,7 +5,7 @@
 .history/
 .vscode/
 web/package-lock.json
-docker_env/mysql/*
-!docker_env/mysql/Dockerfile
-docker_env/redis/*
-!docker_env/redis/Dockerfile
+docker_local/mysql/*
+!docker_local/mysql/Dockerfile
+docker_local/redis/*
+!docker_local/redis/Dockerfile
