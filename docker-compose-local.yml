@@ -13,7 +13,7 @@ services:
       - ./docker_local/nginx/my.conf:/etc/nginx/conf.d/my.conf
       - ./backend/media:/backend/media
       - ./web/src:/web/src
-      - /app/node_modules
+      - /web/node_modules
     expose:
       - "8088"
     restart: always
@@ -45,7 +45,7 @@ services:
       network:
         ipv4_address: 177.10.0.12
     # command: python manage.py runserver 0.0.0.0:8001
-    command: uvicorn application.asgi:application --host 0.0.0.0 --port 8001 --workers 4
+    command: uvicorn application.asgi:application --host 0.0.0.0 --port 8001 --reload --workers 4
 
   mysql:
     build:
